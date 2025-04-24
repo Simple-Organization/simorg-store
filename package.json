@@ -6,7 +6,7 @@
     "benchmark": "tsx tests/benchmark.ts",
     "build": "tsc && rollup -c && tsx esbuild.ts",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "prepack": "pnpm build",
+    "prepack": "bun run build",
     "test": "playwright test"
   },
   "main": "dist/index.js",
