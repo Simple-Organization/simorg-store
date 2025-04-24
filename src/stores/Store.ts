@@ -1,4 +1,4 @@
-import type { WritableSignal } from 'signal-factory';
+import { WritableSignal } from '..';
 import { _is, Comparator } from './utils';
 
 //
@@ -11,17 +11,17 @@ export class Store<T> implements WritableSignal<T> {
   /**
    * @internal
    */
-  _value: T;
+  v: T;
 
   /**
    * @internal
    */
-  _cbs: Set<(value: T) => void> = new Set();
+  cbs: Set<(value: T) => void> = new Set();
 
   /**
    * @internal
    */
-  _is: Comparator;
+  is: Comparator;
 
   /**
    * Creates a new store.
@@ -29,8 +29,8 @@ export class Store<T> implements WritableSignal<T> {
    * @param is The function that compares the current value with the new value.
    */
   constructor(initial: T, is: Comparator = _is) {
-    this._value = initial;
-    this._is = is;
+    this.v = initial;
+    this.is = is;
   }
 
   /**
@@ -38,7 +38,7 @@ export class Store<T> implements WritableSignal<T> {
    * @returns The current value of the signal/atom.
    */
   get(): T {
-    return this._value;
+    return this.v;
   }
 
   /**
@@ -47,10 +47,10 @@ export class Store<T> implements WritableSignal<T> {
    * @returns A function that unsubscribes the callback from the signal/atom.
    */
   subscribe(callback: (value: T) => void): () => void {
-    callback(this._value);
-    this._cbs.add(callback);
+    callback(this.v);
+    this.cbs.add(callback);
     return () => {
-      this._cbs.delete(callback);
+      this.cbs.delete(callback);
     };
   }
 
@@ -59,13 +59,13 @@ export class Store<T> implements WritableSignal<T> {
    * @param newValue The new value to set.
    */
   set(newValue: T): void {
-    if (this._is(this._value, newValue)) {
+    if (this.is(this.v, newValue)) {
       return;
     }
 
-    this._value = newValue;
-    for (const callback of this._cbs) {
-      callback(this._value);
+    this.v = newValue;
+    for (const callback of this.cbs) {
+      callback(this.v);
     }
   }
 
@@ -74,7 +74,7 @@ export class Store<T> implements WritableSignal<T> {
    * @param updater The function that updates the current value.
    */
   update(updater: (value: T) => T): void {
-    this.set(updater(this._value));
+    this.set(updater(this.v));
   }
 }
 

@@ -15,9 +15,9 @@ test.describe('MultiSelector', () => {
       (get) => get(signal1) + '' + get(signal2),
     );
 
-    expect(signal1._cbs.size).toBe(0);
-    expect(signal2._cbs.size).toBe(0);
-    expect(_selector._cbs.size).toBe(0);
+    expect(signal1.cbs.size).toBe(0);
+    expect(signal2.cbs.size).toBe(0);
+    expect(_selector.cbs.size).toBe(0);
 
     const values: string[] = [];
 
@@ -25,18 +25,18 @@ test.describe('MultiSelector', () => {
       values.push(value);
     });
 
-    expect(signal1._cbs.size).toBe(1);
-    expect(signal2._cbs.size).toBe(1);
-    expect(_selector._cbs.size).toBe(1);
+    expect(signal1.cbs.size).toBe(1);
+    expect(signal2.cbs.size).toBe(1);
+    expect(_selector.cbs.size).toBe(1);
 
     signal1.set('world');
     signal2.set(3);
 
     unsubscribe();
 
-    expect(signal1._cbs.size).toBe(0);
-    expect(signal2._cbs.size).toBe(0);
-    expect(_selector._cbs.size).toBe(0);
+    expect(signal1.cbs.size).toBe(0);
+    expect(signal2.cbs.size).toBe(0);
+    expect(_selector.cbs.size).toBe(0);
   });
 
   //

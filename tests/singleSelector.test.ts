@@ -12,8 +12,8 @@ test.describe('SingleSelector', () => {
     const signal = store('hello');
     const _selector = new SingleSelector(signal, (value) => value + '1');
 
-    expect(signal._cbs.size).toBe(0);
-    expect(_selector._cbs.size).toBe(0);
+    expect(signal.cbs.size).toBe(0);
+    expect(_selector.cbs.size).toBe(0);
 
     const values: string[] = [];
 
@@ -21,15 +21,15 @@ test.describe('SingleSelector', () => {
       values.push(value);
     });
 
-    expect(signal._cbs.size).toBe(1);
-    expect(_selector._cbs.size).toBe(1);
+    expect(signal.cbs.size).toBe(1);
+    expect(_selector.cbs.size).toBe(1);
 
     signal.set('world');
 
     unsubscribe();
 
-    expect(signal._cbs.size).toBe(0);
-    expect(_selector._cbs.size).toBe(0);
+    expect(signal.cbs.size).toBe(0);
+    expect(_selector.cbs.size).toBe(0);
   });
 
   //

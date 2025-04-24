@@ -1,4 +1,4 @@
-import type { ReadableSignal } from 'signal-factory';
+import { ReadableSignal } from '..';
 import { _is, Comparator } from './utils';
 
 //
@@ -11,42 +11,42 @@ export class MultiSelector<T> implements ReadableSignal<T> {
   /**
    * @internal
    */
-  _value: any;
+  v: any;
 
   /**
    * @internal
    */
-  _getter: (get: <U>(signal: ReadableSignal<U>) => U) => T;
+  getter: (get: <U>(signal: ReadableSignal<U>) => U) => T;
 
   /**
    * @internal
    */
-  _from: ReadableSignal<any>[] | undefined;
+  from: ReadableSignal<any>[] | undefined;
 
   /**
    * @internal
    */
-  _values: any[] | undefined;
+  values: any[] | undefined;
 
   /**
    * @internal
    */
-  _cbs: Set<(value: T) => void> = new Set();
+  cbs: Set<(value: T) => void> = new Set();
 
   /**
    * @internal
    */
-  _unsubs: (() => void)[] | undefined;
+  unsubs: (() => void)[] | undefined;
 
   /**
    * @internal
    */
-  _hasValue = false;
+  hasValue = false;
 
   /**
    * @internal
    */
-  _is: Comparator;
+  is: Comparator;
 
   //
   //
@@ -60,8 +60,8 @@ export class MultiSelector<T> implements ReadableSignal<T> {
     getter: (get: <U>(signal: ReadableSignal<U>) => U) => T,
     is: Comparator = _is,
   ) {
-    this._getter = getter;
-    this._is = is;
+    this.getter = getter;
+    this.is = is;
   }
 
   //
@@ -72,52 +72,52 @@ export class MultiSelector<T> implements ReadableSignal<T> {
    * @returns The current value of the signal/atom.
    */
   get(): T {
-    if (!this._hasValue) {
+    if (!this.hasValue) {
       this._firstGet();
-    } else if (this._cbs.size === 0) {
+    } else if (this.cbs.size === 0) {
       return this._getValue();
     }
-    return this._value;
+    return this.v;
   }
 
   /**
    * @internal
    */
   _getValue(): any {
-    this._values = [];
+    this.values = [];
 
-    for (const signal of this._from!) {
-      this._values.push(signal.get());
+    for (const signal of this.from!) {
+      this.values.push(signal.get());
     }
 
-    this._value = this._getter((signal) => signal.get());
-    return this._value;
+    this.v = this.getter((signal) => signal.get());
+    return this.v;
   }
 
   /**
    * @internal
    */
   _firstGet(): any {
-    this._from = [];
+    this.from = [];
 
     const getMethod = (signal: ReadableSignal<any>) => {
-      if (!this._from!.includes(signal)) {
-        this._from!.push(signal);
+      if (!this.from!.includes(signal)) {
+        this.from!.push(signal);
       }
       return signal.get();
     };
 
     const values = [];
 
-    for (const signal of this._from!) {
+    for (const signal of this.from!) {
       values.push(signal.get());
     }
 
-    this._values = values;
-    this._value = this._getter(getMethod);
-    this._hasValue = true;
+    this.values = values;
+    this.v = this.getter(getMethod);
+    this.hasValue = true;
 
-    return this._value;
+    return this.v;
   }
 
   //
@@ -129,37 +129,37 @@ export class MultiSelector<T> implements ReadableSignal<T> {
    * @returns A function that unsubscribes the callback from the signal/atom.
    */
   subscribe(callback: (value: T) => void): () => void {
-    if (!this._hasValue) {
+    if (!this.hasValue) {
       this._firstGet();
     }
 
     //
     //
 
-    if (!this._unsubs) {
+    if (!this.unsubs) {
       let firstSubscribe = true;
-      this._unsubs = [];
+      this.unsubs = [];
 
-      for (let i = 0; i < this._from!.length; i++) {
-        const unsub = this._from![i].subscribe((signalValue) => {
+      for (let i = 0; i < this.from!.length; i++) {
+        const unsub = this.from![i].subscribe((signalValue) => {
           if (firstSubscribe) {
             return;
           }
 
-          if (this._is(this._values![i], signalValue)) {
+          if (this.is(this.values![i], signalValue)) {
             return;
           }
 
-          this._values![i] = signalValue;
-          const value = this._getter((signal) => signal.get());
-          this._value = value;
+          this.values![i] = signalValue;
+          const value = this.getter((signal) => signal.get());
+          this.v = value;
 
-          for (const cb of this._cbs) {
+          for (const cb of this.cbs) {
             cb(value);
           }
         });
 
-        this._unsubs.push(unsub);
+        this.unsubs.push(unsub);
       }
 
       firstSubscribe = false;
@@ -168,19 +168,19 @@ export class MultiSelector<T> implements ReadableSignal<T> {
     //
     //
 
-    this._cbs.add(callback);
-    callback(this._value);
+    this.cbs.add(callback);
+    callback(this.v);
 
     //
     //
 
     return () => {
-      this._cbs.delete(callback);
-      if (this._cbs.size === 0 && this._unsubs) {
-        for (const unsubscribe of this._unsubs) {
+      this.cbs.delete(callback);
+      if (this.cbs.size === 0 && this.unsubs) {
+        for (const unsubscribe of this.unsubs) {
           unsubscribe();
         }
-        this._unsubs = undefined;
+        this.unsubs = undefined;
       }
     };
   }

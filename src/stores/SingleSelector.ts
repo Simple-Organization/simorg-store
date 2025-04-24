@@ -1,4 +1,4 @@
-import type { ReadableSignal } from 'signal-factory';
+import { ReadableSignal } from '..';
 import { _is, Comparator } from './utils';
 
 //
@@ -18,37 +18,37 @@ export class SingleSelector<T extends ReadableSignal<any>, U>
   /**
    * @internal
    */
-  _value!: any;
+  v!: any;
 
   /**
    * @internal
    */
-  _from: T;
+  from: T;
 
   /**
    * @internal
    */
-  _getter: (value: SignalValue<T>) => U;
+  getter: (value: SignalValue<T>) => U;
 
   /**
    * @internal
    */
-  _unsub: (() => void) | undefined;
+  unsub: (() => void) | undefined;
 
   /**
    * @internal
    */
-  _hasValue = false;
+  hasValue = false;
 
   /**
    * @internal
    */
-  _cbs = new Set<(value: any) => void>();
+  cbs = new Set<(value: any) => void>();
 
   /**
    * @internal
    */
-  _is: Comparator;
+  is: Comparator;
 
   //
   //
@@ -64,9 +64,9 @@ export class SingleSelector<T extends ReadableSignal<any>, U>
     getter: (value: SignalValue<T>) => U,
     is: Comparator = _is,
   ) {
-    this._from = from;
-    this._getter = getter;
-    this._is = is;
+    this.from = from;
+    this.getter = getter;
+    this.is = is;
   }
 
   /**
@@ -74,10 +74,10 @@ export class SingleSelector<T extends ReadableSignal<any>, U>
    * @returns The current value of the signal/atom.
    */
   get(): U {
-    if (!this._unsub) {
-      return this._getter(this._from.get());
+    if (!this.unsub) {
+      return this.getter(this.from.get());
     }
-    return this._value;
+    return this.v;
   }
 
   /**
@@ -86,41 +86,41 @@ export class SingleSelector<T extends ReadableSignal<any>, U>
    * @returns A function that unsubscribes the callback from the signal/atom.
    */
   subscribe(callback: (value: any) => void) {
-    if (!this._hasValue) {
-      this._value = this._getter(this._from.get());
-      this._hasValue = true;
+    if (!this.hasValue) {
+      this.v = this.getter(this.from.get());
+      this.hasValue = true;
     }
 
-    if (!this._unsub) {
+    if (!this.unsub) {
       let firstSubscribe = true;
 
-      this._unsub = this._from.subscribe((fromValue) => {
+      this.unsub = this.from.subscribe((fromValue) => {
         if (firstSubscribe) {
           firstSubscribe = false;
           return;
         }
 
-        const newValue = this._getter(fromValue);
+        const newValue = this.getter(fromValue);
 
-        if (this._is(newValue, this._value)) {
+        if (this.is(newValue, this.v)) {
           return;
         }
 
-        this._value = newValue;
-        for (const callback of this._cbs) {
-          callback(this._value);
+        this.v = newValue;
+        for (const callback of this.cbs) {
+          callback(this.v);
         }
       });
     }
 
-    this._cbs.add(callback);
-    callback(this._value);
+    this.cbs.add(callback);
+    callback(this.v);
 
     return () => {
-      this._cbs.delete(callback);
-      if (this._cbs.size === 0 && this._unsub) {
-        this._unsub();
-        this._unsub = undefined;
+      this.cbs.delete(callback);
+      if (this.cbs.size === 0 && this.unsub) {
+        this.unsub();
+        this.unsub = undefined;
       }
     };
   }
