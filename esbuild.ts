@@ -12,15 +12,3 @@ await esbuild.build({
   format: 'esm',
   plugins: [fixClassNamesPlugin()],
 });
-
-//
-//  Hooks
-//
-
-await esbuild.build({
-  entryPoints: ['./src/hooks/preact.ts'],
-  bundle: true,
-  outfile: 'preact/index.js',
-  format: 'esm',
-  external: ['preact/hooks', 'signal-factory'],
-});
