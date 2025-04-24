@@ -3,7 +3,6 @@ import { atom } from './experiments/atom';
 import { Atom } from './old-selectors/class-atom';
 import { singleSelector } from './old-selectors/singleSelector';
 import { multiSelector } from './old-selectors/multiSelector';
-import { writable, get } from 'svelte/store';
 import { atom2 } from './experiments/atom-get';
 import { SingleSelector } from './old-selectors/SingleSelector-class';
 import { MultiSelector } from './old-selectors/MultiSelector-class';
