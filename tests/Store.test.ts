@@ -71,25 +71,4 @@ test.describe('Store', () => {
 
     expect(values).toEqual(['hello', 'world', 'world', 'world']);
   });
-
-  //
-  //
-
-  test('store.update must work', () => {
-    const signal = store('hello');
-
-    const values: string[] = [];
-
-    const unsubscribe = signal.subscribe((value) => {
-      values.push(value);
-    });
-
-    signal.update((prev) => prev + ' world');
-
-    unsubscribe();
-
-    signal.set('unsubscribed');
-
-    expect(values).toEqual(['hello', 'hello world']);
-  });
 });

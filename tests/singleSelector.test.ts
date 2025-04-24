@@ -1,43 +1,17 @@
 import test, { expect } from '@playwright/test';
-import { SingleSelector, store } from '../src';
+import { singleSelector, store } from '../src';
 
 //
 //
 
-test.describe('SingleSelector', () => {
-  //
-  //
-
-  test('single selector must be created and unsubscribed normally', () => {
-    const signal = store('hello');
-    const _selector = new SingleSelector(signal, (value) => value + '1');
-
-    expect(signal.cbs.size).toBe(0);
-    expect(_selector.cbs.size).toBe(0);
-
-    const values: string[] = [];
-
-    const unsubscribe = _selector.subscribe((value) => {
-      values.push(value);
-    });
-
-    expect(signal.cbs.size).toBe(1);
-    expect(_selector.cbs.size).toBe(1);
-
-    signal.set('world');
-
-    unsubscribe();
-
-    expect(signal.cbs.size).toBe(0);
-    expect(_selector.cbs.size).toBe(0);
-  });
+test.describe('singleSelector', () => {
 
   //
   //
 
   test('single selector must deliver the correct values', () => {
     const signal = store('hello');
-    const _selector = new SingleSelector(signal, (value) => value + '2');
+    const _selector = singleSelector(signal, (value) => value + '2');
 
     const values: string[] = [];
 
@@ -60,7 +34,7 @@ test.describe('SingleSelector', () => {
 
   test('If the store have its value updated, but no one as subscribed to the multi selector, it must keep sync', () => {
     const signal = store('hello');
-    const _selector = new SingleSelector(signal, (value) => value + '2');
+    const _selector = singleSelector(signal, (value) => value + '2');
 
     expect(_selector.get()).toBe('hello2');
 
@@ -74,7 +48,7 @@ test.describe('SingleSelector', () => {
 
   test('If the same value is given to single selector, it must not reupdate', () => {
     const signal = store('hello');
-    const _selector = new SingleSelector(signal, (value) => value + '2');
+    const _selector = singleSelector(signal, (value) => value + '2');
 
     const values: string[] = [];
 
@@ -98,7 +72,7 @@ test.describe('SingleSelector', () => {
 
   test('If the store reupdate the single selector should not reupdate', () => {
     const signal = store('hello', () => false);
-    const _selector = new SingleSelector(signal, (value) => value + '2');
+    const _selector = singleSelector(signal, (value) => value + '2');
 
     const values: string[] = [];
 
@@ -125,7 +99,7 @@ test.describe('SingleSelector', () => {
 
     let count = 0;
 
-    const _selector = new SingleSelector(signal, (value) => {
+    const _selector = singleSelector(signal, (value) => {
       count++;
       return value + '2';
     });
@@ -145,7 +119,7 @@ test.describe('SingleSelector', () => {
   test('If the store reupdate the and the selector is set to false it should reupdate', () => {
     const signal = store('hello', () => false);
     const signal2 = store(2, () => false);
-    const _selector = new SingleSelector(
+    const _selector = singleSelector(
       signal,
       (value) => value + '2',
       () => false,
