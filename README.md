@@ -30,13 +30,13 @@ pnpm i simorg-store
 A API do `simorg-store` oferece um `selector`:
 
 ```ts
-import { store, selector, multiSelector } from 'simorg-store';
+import { store, singleSelector, multiSelector } from 'simorg-store';
 
 const mySignal1 = store(1);
 const mySignal2 = store(2);
 
 // Para valores únicos
-const singleValue = selector(mySignal1, (value) => value + 1);
+const singleValue = singleSelector(mySignal1, (value) => value + 1);
 
 // API conveniente para múltiplos valores
 // Inspirada no Recoil e Jotai
