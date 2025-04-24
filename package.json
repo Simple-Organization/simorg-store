@@ -1,34 +1,28 @@
 {
   "name": "simorg-store",
-  "version": "1.0.0-next.1",
+  "version": "1.0.0-next.2",
   "author": "Simple Organization",
   "scripts": {
+    "benchmark": "tsx tests/benchmark.ts",
     "build": "tsc && rollup -c && tsx esbuild.ts",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "test": "playwright test",
     "prepack": "pnpm build",
-    "benchmark": "tsx tests/benchmark.ts"
+    "test": "playwright test"
   },
   "main": "dist/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Simple-Organization/simorg-store.git"
-  },
-  "bugs": "https://github.com/Simple-Organization/simorg-store/issues",
-  "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.46.0",
+    "@playwright/test": "^1.47.1",
     "@types/benchmark": "^2.1.5",
     "benchmark": "^2.1.4",
-    "esbuild": "^0.23.0",
-    "esbuild-utils": "1.0.0-next.0",
-    "preact": ">=10",
+    "esbuild": "^0.23.1",
+    "esbuild-utils": "1.0.0-next.9",
+    "preact": "^10.24.0",
     "prettier": "^3.3.3",
-    "rollup": "^4.20.0",
+    "rollup": "^4.21.3",
     "rollup-plugin-dts": "^6.1.1",
-    "tsx": "^4.17.0",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.2"
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.6"
   },
   "files": [
     "dist/index.d.ts",
@@ -36,6 +30,7 @@
     "preact/index.d.ts",
     "preact/index.js"
   ],
+  "bugs": "https://github.com/Simple-Organization/simorg-store/issues",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -50,7 +45,12 @@
       "import": "./preact/index.js"
     }
   },
-  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "packageManager": "pnpm@9.6.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Simple-Organization/simorg-store.git"
+  },
   "type": "module",
-  "packageManager": "pnpm@9.6.0"
+  "types": "dist/index.d.ts"
 }
